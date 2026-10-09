@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../expenses/data/models/expense_model.dart';
 
@@ -78,7 +77,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart>
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '${DateFormat('EEEE, dd/MM', 'vi_VN').format(selectedItem.day)}: ${ExpenseCategory.formatVnd(selectedItem.total)}',
+              _tooltipDate(selectedItem.day, selectedItem.total),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -138,21 +137,59 @@ class _WeeklyBarChartState extends State<WeeklyBarChart>
             final isSelected = _selectedBarIndex == i;
 
             return Text(
-              DateFormat('E', 'vi_VN').format(d.day),
+              _dayLabel(d.day),
               style: TextStyle(
                 fontSize: 11,
                 color: isSelected
-                    ? cs.primary
-                    : (isToday ? cs.tertiary : cs.onSurfaceVariant),
+                  ? cs.primary
+                  : (isToday ? cs.tertiary : cs.onSurfaceVariant),
                 fontWeight: (isToday || isSelected)
-                    ? FontWeight.w800
-                    : FontWeight.w500,
+                  ? FontWeight.w800
+                  : FontWeight.w500,
               ),
             );
           }),
         ),
       ],
     );
+  }
+
+  static const List<String> _vietnameseDays = [
+    'T2',
+    'T3',
+    'T4',
+    'T5',
+    'T6',
+    'T7',
+    'CN'
+  ];
+
+  static const List<String> _vietnameseFullDays = [
+    'Thứ Hai',
+    'Thứ Ba',
+    'Thứ Tư',
+    'Thứ Năm',
+    'Thứ Sáu',
+    'Thứ Bảy',
+    'Chủ Nhật'
+  ];
+
+  String _dayLabel(DateTime d) {
+    final idx = d.weekday - 1;
+    if (idx >= 0 && idx < _vietnameseDays.length) {
+      return _vietnameseDays[idx];
+    }
+    return '${d.day}';
+  }
+
+  String _tooltipDate(DateTime d, double total) {
+    final idx = d.weekday - 1;
+    final dayName = (idx >= 0 && idx < _vietnameseFullDays.length)
+        ? _vietnameseFullDays[idx]
+        : '';
+    final dayStr = d.day.toString().padLeft(2, '0');
+    final monthStr = d.month.toString().padLeft(2, '0');
+    return '$dayName, $dayStr/$monthStr: ${ExpenseCategory.formatVnd(total)}';
   }
 
   bool _isToday(DateTime d) {

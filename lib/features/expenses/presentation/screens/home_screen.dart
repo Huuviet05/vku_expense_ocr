@@ -444,6 +444,26 @@ class _EmptyState extends StatelessWidget {
                     color: cs.outline,
                   ),
             ),
+            if (!isSearching) ...[
+              const SizedBox(height: 20),
+              Consumer(
+                builder: (context, ref, _) => FilledButton.tonalIcon(
+                  onPressed: () async {
+                    await ref.read(expenseProvider.notifier).resetToSamples();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✅ Đã nạp lại 4 hóa đơn mẫu thành công!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.auto_awesome_rounded),
+                  label: const Text('Nạp 4 hóa đơn mẫu (Demo)'),
+                ),
+              ),
+            ],
           ],
         ),
       ),

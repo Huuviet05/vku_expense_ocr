@@ -227,4 +227,22 @@ class AppDatabase {
     final all = await db.query(_kTableExpenses, orderBy: 'date DESC');
     await _saveToPrefs(all.map(ExpenseModel.fromMap).toList());
   }
+
+  /// Restores initial 4 demo sample expenses (Highlands, WinMart, Grab, EVN)
+  Future<void> restoreSamples() async {
+    if (kIsWeb) {
+      _inMemoryList = List<ExpenseModel>.from(_defaultSamples);
+      _webInitialized = true;
+      await _saveToPrefs(_inMemoryList);
+      return;
+    }
+
+    final db = await database;
+    await db.delete(_kTableExpenses);
+    for (final e in _defaultSamples) {
+      await db.insert(_kTableExpenses, e.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    await _saveToPrefs(_defaultSamples);
+  }
 }

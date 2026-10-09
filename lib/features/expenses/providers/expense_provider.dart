@@ -62,6 +62,12 @@ class ExpenseNotifier extends AsyncNotifier<List<ExpenseModel>> {
       (state.valueOrNull ?? []).where((e) => e.id != id).toList(),
     );
   }
+
+  Future<void> resetToSamples() async {
+    await _repo.restoreSamples();
+    final items = await _repo.getAllExpenses();
+    state = AsyncData(items);
+  }
 }
 
 /// The main provider used throughout the app

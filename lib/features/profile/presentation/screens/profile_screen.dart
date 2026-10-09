@@ -374,14 +374,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     subtitle: const Text(
                         'Nạp lại hóa đơn Highlands, WinMart, Grab, EVN'),
                     onTap: () async {
-                      // Trigger database refresh
-                      ref.invalidate(expenseProvider);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('✅ Đã nạp lại dữ liệu hóa đơn mẫu!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
+                      await ref.read(expenseProvider.notifier).resetToSamples();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('✅ Đã nạp lại 4 hóa đơn mẫu thành công!'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
                     },
                   ),
                   ListTile(

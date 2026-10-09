@@ -10,4 +10,5 @@ class ExpenseRepository {
   Future<void> insertExpense(ExpenseModel e) => _db.insertExpense(e);
   Future<void> updateExpense(ExpenseModel e) => _db.updateExpense(e);
   Future<void> deleteExpense(String id) => _db.deleteExpense(id);
+  Future<void> restoreSamples() => _db.restoreSamples();
 }

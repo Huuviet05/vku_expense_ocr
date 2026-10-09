@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../expenses/data/models/expense_model.dart';
 import '../../../expenses/providers/expense_provider.dart';
@@ -218,7 +217,7 @@ class _ReviewReceiptScreenState extends ConsumerState<ReviewReceiptScreen> {
                   leading: Icon(Icons.event_rounded, color: cs.primary),
                   title: const Text('Ngày lập hóa đơn'),
                   subtitle: Text(
-                    DateFormat('dd/MM/yyyy', 'vi_VN').format(_date),
+                    '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}',
                     style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w600),
                   ),
                   trailing: Icon(Icons.edit_calendar_rounded, color: cs.primary),

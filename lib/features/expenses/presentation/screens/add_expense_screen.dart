@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 import '../../data/models/expense_model.dart';
 import '../../providers/expense_provider.dart';
@@ -151,7 +150,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 leading: const Icon(Icons.calendar_today_outlined),
                 title: const Text('Ngày chi tiêu'),
                 subtitle: Text(
-                  DateFormat('dd/MM/yyyy', 'vi_VN').format(_date),
+                  '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 trailing: const Icon(Icons.chevron_right),

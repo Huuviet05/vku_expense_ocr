@@ -17,10 +17,18 @@ enum ExpenseCategory {
   IconData get displayIcon => icon;
 
   /// Vietnamese Dong number formatter: 245.000 đ
-  static final _vndFormatter = NumberFormat('#,###', 'vi_VN');
+  static final _vndFormatter = NumberFormat('#,###', 'vi');
 
-  static String formatVnd(double amount) =>
-      '${_vndFormatter.format(amount.round())} đ';
+  static String formatVnd(double amount) {
+    try {
+      return '${_vndFormatter.format(amount.round())} đ';
+    } catch (_) {
+      final str = amount.round().toString();
+      final reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+      final formatted = str.replaceAllMapped(reg, (m) => '${m[1]}.');
+      return '$formatted đ';
+    }
+  }
 }
 
 
@@ -73,7 +81,7 @@ class ExpenseModel {
   String get formattedAmount => ExpenseCategory.formatVnd(amount);
 
   String get formattedDate =>
-      DateFormat('dd/MM/yyyy', 'vi_VN').format(date);
+      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 
   ExpenseModel copyWith({
     String? merchant,

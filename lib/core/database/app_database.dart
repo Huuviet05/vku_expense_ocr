@@ -110,6 +110,15 @@ class AppDatabase {
       _kTableExpenses,
       orderBy: 'date DESC',
     );
+    if (maps.isEmpty) {
+      // Auto seed initial sample expenses for immediate demonstration
+      for (final e in _webExpenses) {
+        await db.insert(_kTableExpenses, e.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      return List<ExpenseModel>.from(_webExpenses)
+        ..sort((a, b) => b.date.compareTo(a.date));
+    }
     return maps.map(ExpenseModel.fromMap).toList();
   }
 

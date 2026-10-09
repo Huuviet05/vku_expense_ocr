@@ -99,10 +99,32 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
               subtitle: 'Biểu đồ tròn Animated Donut Chart (chạm để chọn)',
               child: categoryTotals.isEmpty ||
                       categoryTotals.values.every((v) => v == 0)
-                  ? const Padding(
-                      padding: EdgeInsets.all(32),
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
                       child: Center(
-                        child: Text('Chưa có dữ liệu chi tiêu để hiển thị biểu đồ'),
+                        child: Column(
+                          children: [
+                            Icon(Icons.pie_chart_outline_rounded,
+                                size: 48,
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.4)),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Chưa có dữ liệu chi tiêu',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Thêm chi tiêu để xem phân bổ biểu đồ tròn',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   : Column(

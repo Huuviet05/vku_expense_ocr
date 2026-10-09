@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../data/models/expense_model.dart';
 import '../../providers/expense_provider.dart';
@@ -438,7 +437,9 @@ class _EditExpenseSheetState extends ConsumerState<_EditExpenseSheet> {
                   side: BorderSide(color: cs.outlineVariant),
                 ),
                 leading: const Icon(Icons.calendar_today_outlined),
-                title: Text(DateFormat('dd/MM/yyyy', 'vi_VN').format(_date)),
+                title: Text(
+                  '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}',
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () async {
                   final picked = await showDatePicker(

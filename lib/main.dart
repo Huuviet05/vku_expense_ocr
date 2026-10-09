@@ -6,7 +6,9 @@ import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('vi_VN', null);
+  try {
+    await initializeDateFormatting('vi', null);
+  } catch (_) {}
   runApp(
     // ProviderScope wraps the entire app to enable Riverpod state management
     const ProviderScope(child: VkuExpenseApp()),

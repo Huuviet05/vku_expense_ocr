@@ -9,6 +9,7 @@
 ## 1. GENERAL INFORMATION & DELIVERABLE LINKS
 * **Team Members:**
   1. Nguyễn Hữu Việt — Student ID: 23IT309 — Role: Full-stack Mobile Developer (System Architecture, On-Device ML Kit OCR, Regex Heuristics Engine, Review & Verification Screen, Riverpod 2 State Management, CustomPainter Visualization, Platform Channel MethodChannel) — Contribution: 100%
+* **🔗 Live Demo URL (Cloudflare Pages):** [https://vku-expense-ocr.pages.dev](https://vku-expense-ocr.pages.dev) *(Trải nghiệm web tương tác, tự động tương thích mobile)*
 * **📱 Link Tải File APK (Google Drive / GitHub Releases):** [https://github.com/huuviet05/vku_expense_ocr/releases/download/v1.0.0/app-release.apk](https://github.com/huuviet05/vku_expense_ocr/releases/download/v1.0.0/app-release.apk) *(Sẵn sàng cài đặt và chạy trên mọi thiết bị Android)*
 * **💻 GitHub Repository:** [https://github.com/huuviet05/vku_expense_ocr.git](https://github.com/huuviet05/vku_expense_ocr.git) *(Public repo, Clean Architecture, tài liệu README.md chi tiết)*
 * **🎥 Video Demo (Physical Android Phone / Emulator):** [Link Video Demo 2–3 phút trên YouTube / Google Drive — Thể hiện quét hóa đơn thời gian thực, bóc tách regex, xác nhận review và vẽ biểu đồ CustomPainter]

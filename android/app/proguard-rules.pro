@@ -1,0 +1,6 @@
+-dontwarn com.google.mlkit.**
+-keep class com.google.mlkit.** { *; }
+-dontwarn androidx.**
+-keep class androidx.** { *; }
+-dontwarn io.flutter.**
+-keep class io.flutter.** { *; }

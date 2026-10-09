@@ -1,10 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/expenses/data/models/expense_model.dart';
 
-/// Singleton SQLite database helper with Web fallback
+/// Singleton SQLite database helper with Web persistent storage (localStorage)
 ///
 /// Usage:  `final db = await AppDatabase.instance.database;`
 class AppDatabase {
@@ -17,9 +19,10 @@ class AppDatabase {
   static const _kDatabaseName = 'vku_expense_ocr.db';
   static const _kDatabaseVersion = 1;
   static const _kTableExpenses = 'expenses';
+  static const _kPrefExpensesKey = 'vku_saved_expenses_v1';
 
-  // ── In-memory store for Web demo (Cloudflare Pages / Vercel) ──────
-  static final List<ExpenseModel> _webExpenses = [
+  // ── Default sample expenses for initial first-time launch ─────────
+  static final List<ExpenseModel> _defaultSamples = [
     ExpenseModel(
       id: 'demo-1',
       merchant: 'Highlands Coffee',
@@ -58,6 +61,10 @@ class AppDatabase {
     ),
   ];
 
+  // In-memory runtime cache
+  static List<ExpenseModel> _inMemoryList = [];
+  static bool _webInitialized = false;
+
   Future<Database> get database async {
     _db ??= await _initDatabase();
     return _db!;
@@ -84,52 +91,113 @@ class AppDatabase {
     ''');
   }
 
-  // ── CRUD ─────────────────────────────────────────────────────────
+  // ── Persistent SharedPreferences / localStorage Helpers ───────────
+
+  Future<void> _saveToPrefs(List<ExpenseModel> items) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = jsonEncode(items.map((e) => e.toMap()).toList());
+      await prefs.setString(_kPrefExpensesKey, jsonString);
+    } catch (e) {
+      debugPrint('SharedPreferences save error: $e');
+    }
+  }
+
+  Future<List<ExpenseModel>?> _loadFromPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_kPrefExpensesKey);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        final List<dynamic> decoded = jsonDecode(jsonString);
+        return decoded
+            .map((item) =>
+                ExpenseModel.fromMap(Map<String, dynamic>.from(item as Map)))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('SharedPreferences load error: $e');
+    }
+    return null;
+  }
+
+  // ── CRUD Operations ───────────────────────────────────────────────
 
   Future<void> insertExpense(ExpenseModel expense) async {
     if (kIsWeb) {
-      _webExpenses.removeWhere((e) => e.id == expense.id);
-      _webExpenses.insert(0, expense);
+      _inMemoryList.removeWhere((e) => e.id == expense.id);
+      _inMemoryList.insert(0, expense);
+      await _saveToPrefs(_inMemoryList);
       return;
     }
+
     final db = await database;
     await db.insert(
       _kTableExpenses,
       expense.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    // Keep prefs in sync as secondary persistent store
+    final all = await db.query(_kTableExpenses, orderBy: 'date DESC');
+    await _saveToPrefs(all.map(ExpenseModel.fromMap).toList());
   }
 
   Future<List<ExpenseModel>> getAllExpenses() async {
     if (kIsWeb) {
-      return List<ExpenseModel>.from(_webExpenses)
+      if (!_webInitialized) {
+        final saved = await _loadFromPrefs();
+        if (saved != null && saved.isNotEmpty) {
+          _inMemoryList = saved;
+        } else {
+          _inMemoryList = List<ExpenseModel>.from(_defaultSamples);
+          await _saveToPrefs(_inMemoryList);
+        }
+        _webInitialized = true;
+      }
+      return List<ExpenseModel>.from(_inMemoryList)
         ..sort((a, b) => b.date.compareTo(a.date));
     }
+
     final db = await database;
     final maps = await db.query(
       _kTableExpenses,
       orderBy: 'date DESC',
     );
+
     if (maps.isEmpty) {
-      // Auto seed initial sample expenses for immediate demonstration
-      for (final e in _webExpenses) {
+      // First-time mobile launch: Check prefs or seed default samples
+      final fromPrefs = await _loadFromPrefs();
+      final toSeed = (fromPrefs != null && fromPrefs.isNotEmpty)
+          ? fromPrefs
+          : _defaultSamples;
+
+      for (final e in toSeed) {
         await db.insert(_kTableExpenses, e.toMap(),
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
-      return List<ExpenseModel>.from(_webExpenses)
+      await _saveToPrefs(toSeed);
+      return List<ExpenseModel>.from(toSeed)
         ..sort((a, b) => b.date.compareTo(a.date));
     }
-    return maps.map(ExpenseModel.fromMap).toList();
+
+    final list = maps.map(ExpenseModel.fromMap).toList();
+    // Background sync to prefs
+    _saveToPrefs(list);
+    return list;
   }
 
   Future<void> updateExpense(ExpenseModel expense) async {
     if (kIsWeb) {
-      final index = _webExpenses.indexWhere((e) => e.id == expense.id);
+      final index = _inMemoryList.indexWhere((e) => e.id == expense.id);
       if (index != -1) {
-        _webExpenses[index] = expense;
+        _inMemoryList[index] = expense;
+      } else {
+        _inMemoryList.insert(0, expense);
       }
+      await _saveToPrefs(_inMemoryList);
       return;
     }
+
     final db = await database;
     await db.update(
       _kTableExpenses,
@@ -137,18 +205,26 @@ class AppDatabase {
       where: 'id = ?',
       whereArgs: [expense.id],
     );
+
+    final all = await db.query(_kTableExpenses, orderBy: 'date DESC');
+    await _saveToPrefs(all.map(ExpenseModel.fromMap).toList());
   }
 
   Future<void> deleteExpense(String id) async {
     if (kIsWeb) {
-      _webExpenses.removeWhere((e) => e.id == id);
+      _inMemoryList.removeWhere((e) => e.id == id);
+      await _saveToPrefs(_inMemoryList);
       return;
     }
+
     final db = await database;
     await db.delete(
       _kTableExpenses,
       where: 'id = ?',
       whereArgs: [id],
     );
+
+    final all = await db.query(_kTableExpenses, orderBy: 'date DESC');
+    await _saveToPrefs(all.map(ExpenseModel.fromMap).toList());
   }
 }

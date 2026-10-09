@@ -10,7 +10,7 @@
 * **Team Members:**
   1. Nguyễn Hữu Việt — Student ID: 23IT309 — Role: Full-stack Mobile Developer (System Architecture, On-Device ML Kit OCR, Regex Heuristics Engine, Review & Verification Screen, Riverpod 2 State Management, CustomPainter Visualization, Platform Channel MethodChannel) — Contribution: 100%
 * **🔗 Live Demo URL (Cloudflare):** [https://ancient-flower-5859.huuviet19905.workers.dev](https://ancient-flower-5859.huuviet19905.workers.dev) *(Web demo chạy trực tiếp trên Cloudflare)*
-* **📱 Link Tải File APK (Google Drive / GitHub Releases):** [https://github.com/Huuviet05/vku_expense_ocr/releases/tag/v1.0.0](https://github.com/Huuviet05/vku_expense_ocr/releases/tag/v1.0.0) *(File APK build sẵn tại máy: `build/app/outputs/flutter-apk/app-release.apk`)*
+* **📱 Link Tải File APK:** [https://github.com/Huuviet05/vku_expense_ocr/releases/download/v1.0.0/app-release.apk](https://github.com/Huuviet05/vku_expense_ocr/releases/download/v1.0.0/app-release.apk) *(File APK Release 84.2MB build sẵn tại: `build/app/outputs/flutter-apk/app-release.apk`)*
 * **💻 GitHub Repository:** [https://github.com/Huuviet05/vku_expense_ocr](https://github.com/Huuviet05/vku_expense_ocr) *(Public repository đã đẩy code và tag v1.0.0)*
 * **🎥 Video Demo (Physical Android Phone / Emulator):** [Link Video Demo trên YouTube / Google Drive — Quét hóa đơn OCR, bóc tách regex, duyệt chi tiêu và biểu đồ]
 

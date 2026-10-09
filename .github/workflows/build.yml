@@ -1,0 +1,73 @@
+name: Build Flutter Apps (Android & iOS)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  # ── 1. Android Build ──────────────────────────────────────
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.5'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        working-directory: ./vku_expense_ocr
+        run: flutter pub get
+
+      - name: Run Tests
+        working-directory: ./vku_expense_ocr
+        run: flutter test
+
+      - name: Build Android APK
+        working-directory: ./vku_expense_ocr
+        run: flutter build apk --debug
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: vku_expense_ocr/build/app/outputs/flutter-apk/app-debug.apk
+
+  # ── 2. iOS Build (Uses GitHub's free macOS runners!) ───────
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.5'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        working-directory: ./vku_expense_ocr
+        run: flutter pub get
+
+      - name: Build iOS Application (No Codesign)
+        working-directory: ./vku_expense_ocr
+        run: flutter build ios --no-codesign --simulator
+
+      - name: Upload iOS Simulator Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-runner-app
+          path: vku_expense_ocr/build/ios/iphonesimulator/Runner.app

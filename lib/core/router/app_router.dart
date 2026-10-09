@@ -9,6 +9,7 @@ import '../../features/ocr/data/receipt_parser.dart';
 import '../../features/ocr/presentation/screens/ocr_scan_screen.dart';
 import '../../features/ocr/presentation/screens/review_receipt_screen.dart';
 import '../../features/stats/presentation/screens/stats_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 /// Named route constants — prevents typo errors
 abstract class AppRoutes {
@@ -16,6 +17,7 @@ abstract class AppRoutes {
   static const scan = '/scan';
   static const reviewOcr = '/review-ocr';
   static const stats = '/stats';
+  static const profile = '/profile';
   static const detail = '/expense/:id';
 }
 
@@ -52,6 +54,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.stats,
                 builder: (ctx, _) => const StatsScreen(),
+              ),
+            ],
+          ),
+          // Tab 2: Profile & Account
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (ctx, _) => const ProfileScreen(),
               ),
             ],
           ),
@@ -99,6 +110,11 @@ class _AppShell extends StatelessWidget {
             icon: Icon(Icons.bar_chart_outlined),
             selectedIcon: Icon(Icons.bar_chart),
             label: 'Statistics',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Profile',
           ),
         ],
       ),
